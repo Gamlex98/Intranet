@@ -1,0 +1,89 @@
+<h1 style="text-align: center; font-family: 'Courier New', Courier, monospace;"> Upload Files To Nas </h1>
+<br>
+
+<div class="row">
+  <div class="col-8">
+    <label class="btn btn-default p-0">
+      <input type="file" (change)="selectFile($event)" />
+    </label>
+  </div>
+
+  <div class="col-4">
+    <button class="btn btn-success btn-sm" [disabled]="!selectedFiles" (click)="upload()"> Upload </button>
+  </div>
+</div>
+
+<div *ngIf="currentFile" class="progress my-3">
+  <div
+    class="progress-bar progress-bar-info"
+    role="progressbar"
+    attr.aria-valuenow="{{ progress }}"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    [ngStyle]="{ width: progress + '%' }"
+  >
+    {{ progress }}%
+  </div>
+</div>
+
+<div *ngIf="message" class="alert alert-secondary" role="alert">{{ message }}</div>
+
+<!-- <div class="card mt-3">
+  <div class="card-header">List of Files</div>
+  <ul class="list-group list-group-flush">
+    <li *ngFor="let file of fileInfos | async" class="list-group-item">
+      <a href="{{ file.url }}">{{ file.name }}</a>
+    </li>
+  </ul>
+</div> -->
+
+<br><br>
+
+<h1 style="text-align: center; font-family: 'Courier New', Courier, monospace;"> Upload Info to MongoDB </h1>
+<br>
+
+<form #documentForm="ngForm" (ngSubmit)="enviarInfo(documentForm)">
+  <div class="form-group">
+    <label for="nombre">Asignar Nombre :</label>
+    <input type="text" id="nombre" name="nombre" class="form-control" [(ngModel)]="documento.nombre" required>
+  </div>
+  <br>
+  <div class="form-group">
+    <label for="fecha">Fecha de Subida:</label>
+    <input type="date" id="fecha" name="fecha" class="form-control" style="width: 150px;" [(ngModel)]="documento.fecha" required>
+  </div>  
+  <br>
+  <div class="form-group">
+    <label for="area">Área Correspondiente :</label>
+    <select class="form-control" id="IdSeleccionarArea" [(ngModel)]="documento.area" name="area" required>
+      <option value="" disabled selected>Seleccione el Área...</option>
+      <option value="talento humano">Talento Humano</option>
+      <option value="contabilidad">Contabilidad</option>
+      <option value="importaciones">Importaciones</option>
+      <option value="seguridad">Seguridad</option>
+      <option value="servicios generales">Servicios Generales</option>
+      <option value="sistemas integrados">Sistemas Integrados de Gestión</option>
+    </select>
+  </div>
+  <br>
+  <div class="form-group">
+    <label for="archivo">Carpeta del Documento :</label>
+    <select class="form-control" (change)="onFolderSelected($event)">
+      <option value="documentos/talento_humano/">Talento Humano</option>
+      <option value="documentos/importaciones/">Importaciones</option>
+      <option value="documentos/servicios_generales/">Servicios Generales</option>
+      <option value="documentos/sig/"> Sistemas Integrados de Gestion </option>
+    </select>
+    <!-- <input type="file" (change)="onFileSelected($event)"> -->
+    <input type="file" id="archivo" name="archivo" class="form-control-file" (change)="onFileSelected($event)" required>
+  </div>
+  
+<br>
+<div class="form-group">
+  <label for="url">URL :</label>
+  <input type="text" id="url" name="url" class="form-control" [(ngModel)]="direccion.url" required>
+</div>
+
+<br>
+  <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
