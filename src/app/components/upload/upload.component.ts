@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { DocumentModel } from 'src/app/models/document.model';
 import { FileService } from 'src/app/services/file.service';
-import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpEventType, HttpHeaders, HttpResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-upload',
@@ -17,61 +16,60 @@ export class UploadComponent {
   direccion = {url: ""};
   rutaRelativa = "";
 
-  selectedFiles?: FileList;
-  currentFile?: File;
-  progress = 0;
   message = '';
 
-  fileInfos?: Observable<any>;
-  
+  fileToUpload !: File;
+  authenticated = false;
+  sid = '';
 
-  constructor(private service: FileService, private http:HttpClient) { }
+  constructor ( private service:FileService, private http:HttpClient ) { }
  
   /* ngOnInit(): void {
     this.fileInfos = this.service.getFiles();
   } */
 
-  selectFile(event: any): void {
-    this.selectedFiles = event.target.files;
-  }
+  authenticate() {
+    const usuario = 'Intranet';
+    const pass = 'MW50cjQxMjMrLSo=';
 
-  upload(): void {
-    this.progress = 0;
-
-    if (this.selectedFiles) {
-      const file: File | null = this.selectedFiles.item(0);
-
-      if (file) {
-        this.currentFile = file;
-
-        this.service.upload(this.currentFile).subscribe({
-          next: (event: any) => {
-            if (event.type === HttpEventType.UploadProgress) {
-              this.progress = Math.round(100 * event.loaded / event.total);
-            } else if (event instanceof HttpResponse) {
-              this.message = event.body.message;
-              // this.fileInfos = this.service.getFiles();
-            }
-          },
-          error: (err: any) => {
-            console.log(err);
-            this.progress = 0;
-
-            if (err.error && err.error.message) {
-              this.message = err.error.message;
-            } else {
-              this.message = 'Could not upload the file!';
-            }
-
-            this.currentFile = undefined;
-          }
-        });
+    this.service.authenticate(usuario, pass).subscribe(
+      authSid => {
+        this.authenticated = true;
+        this.sid = authSid;
+        console.log("SID generado: " + this.sid);
+      },
+      error => {
+        console.error('Authentication failed', error);
       }
-
-      this.selectedFiles = undefined;
-    }
+    );
   }
-  
+
+  selectedFile(event: any) {
+    this.fileToUpload = event.target.files[0];
+  }
+
+  onUpload() {
+    
+    const uploadUrl = `http://172.16.1.24:8095/cgi-bin/filemanager/utilRequest.cgi?func=upload&type=standard&sid=${this.sid}&dest_path=/Web&overwrite=1&progress=-Web`;
+    
+    const formData = new FormData();
+    formData.append('file', this.fileToUpload, this.fileToUpload.name);
+    console.log("nombre archivo : " + this.fileToUpload.name);
+    // console.log(" Form data : " + formData);
+
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'multipart/form-data');
+    headers.append('Accept', 'application/json');
+
+    this.http.post(uploadUrl, formData, { headers }).subscribe(
+      response => {
+        console.log('Upload successful', response);
+      },
+      error => {
+        console.error('Upload failed', error);
+      }
+    );
+  }
   
   enviarInfo(form: NgForm){
     if(form.valid) {
@@ -109,7 +107,6 @@ export class UploadComponent {
   
     reader.readAsDataURL(file);
   }
-  
   
   ajustarAnchoInput(event: any) {
     const input = event.target;

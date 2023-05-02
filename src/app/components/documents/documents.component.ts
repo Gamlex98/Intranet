@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { DocumentModel } from 'src/app/models/document.model';
 import { FileService } from 'src/app/services/file.service';
+import { MatSort } from '@angular/material/sort';
 
 
 @Component({
@@ -15,6 +16,7 @@ import { FileService } from 'src/app/services/file.service';
 })
 
 export class DocumentsComponent implements AfterViewInit {
+  @ViewChild(MatSort) sort !: MatSort;
 
   // mostrar_columnas: string[] = ['fecha', 'area', 'nombre', 'url', 'download' ];
   mostrar_columnas: string[] = ['fecha', 'area', 'nombre', 'download' ];
@@ -30,7 +32,7 @@ export class DocumentsComponent implements AfterViewInit {
 
   documento: DocumentModel = new DocumentModel ();
 
-  loading: boolean = false;
+  // loading: boolean = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -49,6 +51,9 @@ export class DocumentsComponent implements AfterViewInit {
     this.datosIP.paginator = this.paginator;
     this.datosSG.paginator = this.paginator;
     this.datosSIG.paginator = this.paginator;
+
+    this.tablaSeleccionada.paginator = this.paginator;
+    this.tablaSeleccionada.sort = this.sort;
   }
              
   onChange(event: any) {
