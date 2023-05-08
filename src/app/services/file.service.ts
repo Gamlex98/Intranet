@@ -9,10 +9,8 @@ import { DocumentModel } from '../models/document.model';
 export class FileService {
 
   urlLoopback = 'http://172.16.1.249:3030';
-
   // UrlDocumento = "http://172.16.1.24:88/";
-
-  UrlNas = 'http://172.16.1.24:8095/cgi-bin/authLogin.cgi?';
+  urlNas = 'http://172.16.1.24:8095/cgi-bin/authLogin.cgi?';
   
   constructor(private http: HttpClient) { }
 
@@ -20,7 +18,7 @@ export class FileService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
     const body = `user=${username}&pwd=${password}`;
 
-    return this.http.post(this.UrlNas, body, { headers, responseType: 'text' }).pipe(
+    return this.http.post(this.urlNas, body, { headers, responseType: 'text' }).pipe(
       map(response => {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(response, 'text/xml');
@@ -53,7 +51,8 @@ export class FileService {
   }
 
   getDocumentosPorArea(area: string): Observable<any> {
-    return this.http.get(`${this.urlLoopback}/comunicados?filter[where][area]=${area}`);
+    // return this.http.get(`${this.urlLoopback}/comunicados?filter[where][area]=${area}`);
+    return this.http.get(`${this.urlLoopback}/comunicados?filter={"order": "id DESC", "where":{"area":"${area}"}}`);
   }
 
   getUrl(url: string): Observable<any> {

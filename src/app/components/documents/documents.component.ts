@@ -27,12 +27,11 @@ export class DocumentsComponent implements AfterViewInit {
   datosSG = new MatTableDataSource<DocumentosSG>(documentosSG);
   datosSIG = new MatTableDataSource<DocumentosSIG>(documentosSIG);
 
-
   tablaSeleccionada: MatTableDataSource<any> = this.datosTH;
-
   documento: DocumentModel = new DocumentModel ();
-
   // loading: boolean = false;
+  // fechaInicio !: any;
+  // fechaFin !: any;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -51,9 +50,6 @@ export class DocumentsComponent implements AfterViewInit {
     this.datosIP.paginator = this.paginator;
     this.datosSG.paginator = this.paginator;
     this.datosSIG.paginator = this.paginator;
-
-    this.tablaSeleccionada.paginator = this.paginator;
-    this.tablaSeleccionada.sort = this.sort;
   }
              
   onChange(event: any) {
@@ -64,11 +60,12 @@ export class DocumentsComponent implements AfterViewInit {
           this.tablaSeleccionada.data= documentos;
         });
         break;
-      case 'CT':
+      case 'CT': 
         this.tablaSeleccionada = this.datosCT;
         this.service.getDocumentosPorArea('contabilidad').subscribe((documentos: DocumentosCT[]) => {
           this.tablaSeleccionada.data= documentos;
         });
+  
         break;
       case 'IP':
         this.tablaSeleccionada = this.datosIP;
@@ -96,6 +93,28 @@ export class DocumentsComponent implements AfterViewInit {
         break; */
     }
   }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.tablaSeleccionada.filterPredicate = (data: any, filter: string) => data.nombre.trim().toLowerCase().indexOf(filter) !== -1;
+    this.tablaSeleccionada.filter = filterValue;
+    if (!filterValue) {
+      this.tablaSeleccionada.filter = '';
+    }
+  }
+  
+  /* filtrarFecha (inicio : string, fin : string) {
+    const datos = this.tablaSeleccionada.data;
+  
+    const datosFiltrados = datos.filter (dato => {
+      const fechaDato = new Date (dato.fecha);
+      const fechaInicio = new Date (inicio);
+      const fechaFin = new Date (fin);
+      return fechaDato >= fechaInicio && fechaDato <= fechaFin;
+    });
+  
+    this.tablaSeleccionada.data = datosFiltrados;
+  } */
   
   enviarInfo(form: NgForm){
     if(form.valid) {

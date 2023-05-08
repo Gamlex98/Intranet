@@ -41,6 +41,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { InputTextModule } from 'primeng/inputtext';
 import { CalendarModule } from 'primeng/calendar';
 import { UploadComponent } from './components/upload/upload.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,7 @@ import { UploadComponent } from './components/upload/upload.component';
     InfoComplementComponent,
     CarouselComponent,
     DocumentsComponent,
-    UploadComponent
+    UploadComponent,
     
   ],
   imports: [
@@ -88,7 +89,8 @@ import { UploadComponent } from './components/upload/upload.component';
     AutoFocusModule,
     FontAwesomeModule,
     InputTextModule,
-    CalendarModule
+    CalendarModule,
+    MatProgressBarModule
     
   ],
   providers: [Validators, 
